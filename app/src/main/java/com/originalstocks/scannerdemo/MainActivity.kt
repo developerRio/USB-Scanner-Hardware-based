@@ -9,7 +9,6 @@ import android.hardware.usb.*
 import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.hoho.android.usbserial.driver.UsbSerialPort
 import com.hoho.android.usbserial.driver.UsbSerialProber
@@ -74,9 +73,9 @@ class MainActivity : AppCompatActivity(), SerialInputOutputManager.Listener {
         }
         binding.scannedOutputText.text = "Scan QR to display data"
 
-        analyzingUSB()
+        stockMethodForFindingUSBDevices()
 
-        checkDrivers()
+        libraryBasedImplementation()
         binding.powerOnButton.setOnClickListener {
         }
 
@@ -85,7 +84,7 @@ class MainActivity : AppCompatActivity(), SerialInputOutputManager.Listener {
 
     }
 
-    private fun checkDrivers() {
+    private fun libraryBasedImplementation() {
         val manager = getSystemService(USB_SERVICE) as UsbManager
         val availableDrivers = UsbSerialProber.getDefaultProber().findAllDrivers(manager)
         if (availableDrivers.isEmpty()) {
@@ -121,7 +120,7 @@ class MainActivity : AppCompatActivity(), SerialInputOutputManager.Listener {
 
     }
 
-    private fun analyzingUSB() {
+    private fun stockMethodForFindingUSBDevices() {
         mUsbManager = getSystemService(Context.USB_SERVICE) as UsbManager
         mDeviceList = mUsbManager?.deviceList
 
@@ -183,35 +182,6 @@ class MainActivity : AppCompatActivity(), SerialInputOutputManager.Listener {
 
             binding.powerOffButton.setOnClickListener {
                 powerUSBScanner(false, mConnection!!, mEndPoint)
-            }
-        }
-    }
-
-    private fun sendCommandsToUSBScanner(
-        connection: UsbDeviceConnection?,
-        usbInterface: UsbInterface?
-    ) {
-        when {
-            usbInterface == null -> {
-                Toast.makeText(this, "INTERFACE IS NULL", Toast.LENGTH_SHORT).show()
-            }
-            connection == null -> {
-                Toast.makeText(this, "CONNECTION IS NULL", Toast.LENGTH_SHORT).show()
-            }
-            forceClaim == null -> {
-                Toast.makeText(this, "FORCE CLAIM IS NULL", Toast.LENGTH_SHORT).show()
-            }
-            else -> {
-                // sending command via open port :
-                connection.claimInterface(usbInterface, forceClaim)
-
-                binding.powerOnButton.setOnClickListener {
-                    powerUSBScanner(true, connection, mEndPoint)
-                }
-
-                binding.powerOffButton.setOnClickListener {
-                    powerUSBScanner(false, connection, mEndPoint)
-                }
             }
         }
     }
